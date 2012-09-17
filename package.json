@@ -1,6 +1,6 @@
 {
   "name": "static-jade-brunch",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Adds [Jade](http://jade-lang.com) support to [brunch](http://brunch.io) without wrapping the compiled html in modules of type commonjs/amd.",
   "author": {
     "name": "Costantino Giuliodori (ilkosta)"

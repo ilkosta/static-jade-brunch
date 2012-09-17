@@ -43,7 +43,10 @@ htmlFileWriter = (newFilePath) -> (err, content) ->
     fs.writeFile newFilePath, content, (err) ->
       throw err if err?
 
-haveJadeExt = (filePath) -> filePath[-5...] is '.jade'
+isFileToCompile = (filePath) ->
+  fileName = (filePath.split sysPath.sep).pop()
+  /^(?!_).+\.jade/.test fileName
+
 
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
@@ -67,6 +70,5 @@ module.exports = class StaticJadeCompiler
   onCompile: (changedFiles) ->
     config = @config
     changedFiles.every (file) ->
-      console.log 'static-jade-brunch: ' + file.path
-      filesToCompile = (f.path for f in file.sourceFiles when haveJadeExt f.path)
+      filesToCompile = (f.path for f in file.sourceFiles when isFileToCompile f.path)
       fromJade2Html jadeFileName, config, htmlFileWriter getHtmlFilePath jadeFileName, config.paths.public for jadeFileName in filesToCompile
