@@ -1,6 +1,6 @@
 {
   "name": "static-jade-brunch",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Adds Jade support to Brunch without wrapping the compiled html in modules of type commonjs/amd.",
   "author": {
     "name": "Costantino Giuliodori (ilkosta)"
