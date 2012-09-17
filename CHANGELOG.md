@@ -1,3 +1,7 @@
+# static-jade-brunch 1.4.4 (September 18, 2012)
+* eliminated the brunch dependency, needed for the check of others plugins
+
+
 # static-jade-brunch 1.4.2 (September 18, 2012)
 * eliminated the copy in `assets/` of files starting with `_` (underscore)
 

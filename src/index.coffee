@@ -3,8 +3,7 @@ sysPath = require 'path'
 mkdirp  = require 'mkdirp'
 fs      = require 'fs'
 
-# for the check of jade-brunch and notification of errors
-helpers = require 'brunch/lib/helpers'
+# for the notification of errors
 color   = require("ansi-color").set
 growl   = require 'growl'
 
@@ -48,6 +47,27 @@ isFileToCompile = (filePath) ->
   /^(?!_).+\.jade/.test fileName
 
 
+# -------------------- from brunch/lib/helpers -----------------------------------
+extend = (object, properties) ->
+  Object.keys(properties).forEach (key) ->
+    object[key] = properties[key]
+  object
+
+loadPackages = (rootPath, callback) ->
+  rootPath = sysPath.resolve rootPath
+  nodeModules = "#{rootPath}/node_modules"
+  fs.readFile sysPath.join(rootPath, 'package.json'), (error, data) ->
+    return callback error if error?
+    json = JSON.parse(data)
+    deps = Object.keys(extend(json.devDependencies ? {}, json.dependencies))
+    try
+      plugins = deps.map (dependency) -> require "#{nodeModules}/#{dependency}"
+    catch err
+      error = err
+    callback error, plugins
+#--------------------------------------------------------------------------------
+
+
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
   type: 'template'
@@ -55,7 +75,7 @@ module.exports = class StaticJadeCompiler
 
   constructor: (@config) ->
     # static-jade-brunch must co-exist with jade-brunch plugin
-    helpers.loadPackages helpers.pwd(), (error, packages) ->
+    loadPackages process.cwd(), (error, packages) ->
       throw error if error?
       if "JadeCompiler" not in (p.name for p in packages)
         error = "`jade-brunch` plugin needed by `static-jade-brunch` doesn't seems to be present."
