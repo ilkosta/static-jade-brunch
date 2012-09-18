@@ -28,12 +28,10 @@ getHtmlFilePath = (jadeFilePath, publicPath) ->
   relativeFilePath = jadeFilePath.split sysPath.sep
   relativeFilePath.push relativeFilePath.pop()[...-5] + ".html"
   relativeFilePath.splice 1, 0, "assets"
-  #relativeFilePath = relativeFilePath[1..]
-  #relativeFilePath.unshift publicPath
   newpath = sysPath.join.apply this, relativeFilePath
   return newpath
 
-htmlFileWriter = (newFilePath) -> (err, content) ->
+fileWriter = (newFilePath) -> (err, content) ->
   throw err if err?
   return if not content?
   dirname = sysPath.dirname newFilePath
@@ -91,4 +89,4 @@ module.exports = class StaticJadeCompiler
     config = @config
     changedFiles.every (file) ->
       filesToCompile = (f.path for f in file.sourceFiles when isFileToCompile f.path)
-      fromJade2Html jadeFileName, config, htmlFileWriter getHtmlFilePath jadeFileName, config.paths.public for jadeFileName in filesToCompile
+      fromJade2Html jadeFileName, config, fileWriter getHtmlFilePath jadeFileName, config.paths.public for jadeFileName in filesToCompile

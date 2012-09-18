@@ -1,0 +1,25 @@
+{
+  "author": "Costantino Giuliodori (ilkosta)",
+  "name": "test-jade-brunch-no-presence",
+  "description": "test jade-brunch not present",
+  "version": "1.4.0",
+  "homepage": "https://github.com/ilkosta/static-jade-brunch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilkosta/static-jade-brunch"
+  },
+  "bugs": {
+    "url": "http://github.com/ilkosta/static-jade-brunch/issues"
+  },
+  "bin": {
+  },
+  "scripts": {
+  },
+  "engines": {
+    "node": "~0.6.10 || 0.8 || 0.9"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
