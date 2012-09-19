@@ -24,28 +24,32 @@ getHtmlFilePath = (jadeFilePath, publicPath) ->
   # placing the generated files in 'asset' dir,
   # brunch would trigger the auto-reload-brunch only for them
   # without require to trigger the plugin from here
-
   relativeFilePath = jadeFilePath.split sysPath.sep
   relativeFilePath.push relativeFilePath.pop()[...-5] + ".html"
   relativeFilePath.splice 1, 0, "assets"
   newpath = sysPath.join.apply this, relativeFilePath
   return newpath
 
+logError = (err, title) ->
+  title = 'Brunch jade error' if not title?
+  if err?
+    console.log color err, "red"
+    growl err , title: title
+      
 fileWriter = (newFilePath) -> (err, content) ->
   throw err if err?
   return if not content?
   dirname = sysPath.dirname newFilePath
   mkdirp dirname, '0775', (err) ->
     throw err if err?
-    fs.writeFile newFilePath, content, (err) ->
-      throw err if err?
+    fs.writeFile newFilePath, content, (err) -> throw err if err?
 
 isFileToCompile = (filePath) ->
   fileName = (filePath.split sysPath.sep).pop()
   /^(?!_).+\.jade/.test fileName
 
 
-# -------------------- from brunch/lib/helpers -----------------------------------
+# -------------------- from brunch/lib/helpers --------------------------------
 extend = (object, properties) ->
   Object.keys(properties).forEach (key) ->
     object[key] = properties[key]
@@ -63,7 +67,7 @@ loadPackages = (rootPath, callback) ->
     catch err
       error = err
     callback error, plugins
-#--------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
 
 module.exports = class StaticJadeCompiler
@@ -76,17 +80,27 @@ module.exports = class StaticJadeCompiler
     loadPackages process.cwd(), (error, packages) ->
       throw error if error?
       if "JadeCompiler" not in (p.name for p in packages)
-        error = "`jade-brunch` plugin needed by `static-jade-brunch` doesn't seems to be present."
+        error = """
+          `jade-brunch` plugin needed by `static-jade-brunch` \
+          doesn't seems to be present.
+          """
+        logError error, 'Brunch plugin error'
         errmsg = """
           * Check that package.json contain the `jade-brunch` plugin
           * Check that it is correctly installed by using `npm list`"""
-        console.log color error, "red"
         console.log color errmsg, "red"
-        growl error , title: 'Brunch plugin error'
         throw error
 
   onCompile: (changedFiles) ->
     config = @config
     changedFiles.every (file) ->
-      filesToCompile = (f.path for f in file.sourceFiles when isFileToCompile f.path)
-      fromJade2Html jadeFileName, config, fileWriter getHtmlFilePath jadeFileName, config.paths.public for jadeFileName in filesToCompile
+      filesToCompile =
+        f.path for f in file.sourceFiles when isFileToCompile f.path
+      publicPath = config.paths.public
+      for jadeFileName in filesToCompile
+        newFilePath = getHtmlFilePath jadeFileName, publicPath
+        try
+          fromJade2Html jadeFileName, config, fileWriter newFilePath
+        catch err
+          logError err
+          null
