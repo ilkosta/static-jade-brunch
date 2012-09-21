@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.6 (September 21, 2012)
+* moved the jade-brunch check from the plugin constructor to module loading
+
 # static-jade-brunch 1.4.5 (September 19, 2012)
 * fixed the throw for jade and fs.write errors
 
