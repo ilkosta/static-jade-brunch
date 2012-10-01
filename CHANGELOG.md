@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.7 (October 1, 2012)
+* published the compiled file index.js
+
 # static-jade-brunch 1.4.6 (September 21, 2012)
 * moved the jade-brunch check from the plugin constructor to module loading
 
