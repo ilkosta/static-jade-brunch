@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.8 (October 4, 2012)
+* reverted changes from 1.4.5 for the check of the jade-brunch plugin cohexistence
+
 # static-jade-brunch 1.4.7 (October 1, 2012)
 * published the compiled file index.js
 

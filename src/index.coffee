@@ -20,12 +20,12 @@ fromJade2Html = (jadeFilePath, config, callback) ->
   catch err
     callback err
 
-getAssetFilePath = (originalFilePath , newExt) ->
+getHtmlFilePath = (jadeFilePath, publicPath) ->
   # placing the generated files in 'asset' dir,
   # brunch would trigger the auto-reload-brunch only for them
   # without require to trigger the plugin from here
-  relativeFilePath = originalFilePath.split sysPath.sep
-  relativeFilePath.push relativeFilePath.pop()[...-5] + ".#{newExt}"
+  relativeFilePath = jadeFilePath.split sysPath.sep
+  relativeFilePath.push relativeFilePath.pop()[...-5] + ".html"
   relativeFilePath.splice 1, 0, "assets"
   newpath = sysPath.join.apply this, relativeFilePath
   return newpath
@@ -35,14 +35,14 @@ logError = (err, title) ->
   if err?
     console.log color err, "red"
     growl err , title: title
-
+      
 fileWriter = (newFilePath) -> (err, content) ->
-  logError err if err?
+  throw err if err?
   return if not content?
   dirname = sysPath.dirname newFilePath
   mkdirp dirname, '0775', (err) ->
-    logError err if err?
-    fs.writeFile newFilePath, content, (err) -> logError err if err?
+    throw err if err?
+    fs.writeFile newFilePath, content, (err) -> throw err if err?
 
 isFileToCompile = (filePath) ->
   fileName = (filePath.split sysPath.sep).pop()
@@ -69,37 +69,38 @@ loadPackages = (rootPath, callback) ->
     callback error, plugins
 #------------------------------------------------------------------------------
 
-loadPackages process.cwd(), (error, packages) ->
-  throw error if error?
-  if "JadeCompiler" in (p.name for p in packages)
-    module.exports = class StaticJadeCompiler
-      brunchPlugin: yes
-      type: 'template'
-      extension: 'jade'
 
-      constructor: (@config) ->
-        null
-      onCompile: (changedFiles) ->
-        config = @config
-        changedFiles.every (file) ->
-          filesToCompile =
-            f.path for f in file.sourceFiles when isFileToCompile f.path
-          for jadeFileName in filesToCompile
-            newFilePath = getAssetFilePath jadeFileName, "html"
-            try
-              fromJade2Html jadeFileName, config, fileWriter newFilePath
-            catch err
-              logError err
-              null
-  else
-    error = """
-      `jade-brunch` plugin needed by `static-jade-brunch` \
-      doesn't seems to be present.
-      """
-    logError error, 'Brunch plugin error'
-    errmsg = """
-      * Check that package.json contain the `jade-brunch` plugin
-      * Check that it is correctly installed by using `npm list`"""
-    console.log color errmsg, "red"
-    module.exports = null
-    null
+module.exports = class StaticJadeCompiler
+  brunchPlugin: yes
+  type: 'template'
+  extension: 'jade'
+
+  constructor: (@config) ->
+    # static-jade-brunch must co-exist with jade-brunch plugin
+    loadPackages process.cwd(), (error, packages) ->
+      throw error if error?
+      if "JadeCompiler" not in (p.name for p in packages)
+        error = """
+          `jade-brunch` plugin needed by `static-jade-brunch` \
+          doesn't seems to be present.
+          """
+        logError error, 'Brunch plugin error'
+        errmsg = """
+          * Check that package.json contain the `jade-brunch` plugin
+          * Check that it is correctly installed by using `npm list`"""
+        console.log color errmsg, "red"
+        throw error
+
+  onCompile: (changedFiles) ->
+    config = @config
+    changedFiles.every (file) ->
+      filesToCompile =
+        f.path for f in file.sourceFiles when isFileToCompile f.path
+      publicPath = config.paths.public
+      for jadeFileName in filesToCompile
+        newFilePath = getHtmlFilePath jadeFileName, publicPath
+        try
+          fromJade2Html jadeFileName, config, fileWriter newFilePath
+        catch err
+          logError err
+          null
