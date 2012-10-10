@@ -25,7 +25,7 @@ getHtmlFilePath = (jadeFilePath, publicPath) ->
   # brunch would trigger the auto-reload-brunch only for them
   # without require to trigger the plugin from here
   relativeFilePath = jadeFilePath.split sysPath.sep
-  relativeFilePath.push relativeFilePath.pop()[...-5] + ".html"
+  relativeFilePath.push relativeFilePath.pop()[...-'.static.jade'.length] + ".html"
   relativeFilePath.splice 1, 0, "assets"
   newpath = sysPath.join.apply this, relativeFilePath
   return newpath
@@ -46,7 +46,7 @@ fileWriter = (newFilePath) -> (err, content) ->
 
 isFileToCompile = (filePath) ->
   fileName = (filePath.split sysPath.sep).pop()
-  /^(?!_).+\.jade/.test fileName
+  /^(?!_).+\.static.jade/.test fileName
 
 
 # -------------------- from brunch/lib/helpers --------------------------------
@@ -73,7 +73,7 @@ loadPackages = (rootPath, callback) ->
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
   type: 'template'
-  extension: 'jade'
+  extension: 'static.jade'
 
   constructor: (@config) ->
     # static-jade-brunch must co-exist with jade-brunch plugin
