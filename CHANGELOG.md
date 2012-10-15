@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.9 (October 15, 2012)
+* added the possibility to filter by extension or directory as in https://github.com/ilkosta/static-jade-brunch/pull/4
+
 # static-jade-brunch 1.4.8 (October 4, 2012)
 * reverted changes from 1.4.5 for the check of the jade-brunch plugin cohexistence
 
