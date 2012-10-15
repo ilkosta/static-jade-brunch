@@ -20,22 +20,12 @@ fromJade2Html = (jadeFilePath, config, callback) ->
   catch err
     callback err
 
-getHtmlFilePath = (jadeFilePath, publicPath) ->
-  # placing the generated files in 'asset' dir,
-  # brunch would trigger the auto-reload-brunch only for them
-  # without require to trigger the plugin from here
-  relativeFilePath = jadeFilePath.split sysPath.sep
-  relativeFilePath.push relativeFilePath.pop()[...-5] + ".html"
-  relativeFilePath.splice 1, 0, "assets"
-  newpath = sysPath.join.apply this, relativeFilePath
-  return newpath
-
 logError = (err, title) ->
   title = 'Brunch jade error' if not title?
   if err?
     console.log color err, "red"
     growl err , title: title
-      
+
 fileWriter = (newFilePath) -> (err, content) ->
   throw err if err?
   return if not content?
@@ -44,10 +34,9 @@ fileWriter = (newFilePath) -> (err, content) ->
     throw err if err?
     fs.writeFile newFilePath, content, (err) -> throw err if err?
 
-isFileToCompile = (filePath) ->
-  fileName = (filePath.split sysPath.sep).pop()
-  /^(?!_).+\.jade/.test fileName
 
+isArray = (obj) ->
+ !!(obj and obj.concat and obj.unshift and not obj.callee)
 
 # -------------------- from brunch/lib/helpers --------------------------------
 extend = (object, properties) ->
@@ -73,9 +62,13 @@ loadPackages = (rootPath, callback) ->
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
   type: 'template'
-  extension: 'jade'
+  extension: ".jade"
 
   constructor: (@config) ->
+    @extension = @config.plugins?.static_jade?.extension ? ".jade"
+    StaticJadeCompiler::extension = @extension
+    StaticJadeCompiler::config = @config
+
     # static-jade-brunch must co-exist with jade-brunch plugin
     loadPackages process.cwd(), (error, packages) ->
       throw error if error?
@@ -91,14 +84,35 @@ module.exports = class StaticJadeCompiler
         console.log color errmsg, "red"
         throw error
 
+  isFileToCompile: (filePath) ->
+    if (@config.plugins?.static_jade?.path?)
+      if isArray @config.plugins.static_jade.path
+        fileDir = sysPath.dirname filePath
+        positivePaths = (p for p in @config.plugins.static_jade.path when p.test fileDir)
+        return no if positivePaths.length == 0
+
+    fileName = sysPath.basename filePath
+    fileName[-@extension.length..] == @extension
+
+  getHtmlFilePath: (jadeFilePath, publicPath) ->
+    # placing the generated files in 'asset' dir,
+    # brunch would trigger the auto-reload-brunch only for them
+    # without require to trigger the plugin from here
+    relativeFilePath = jadeFilePath.split sysPath.sep
+    relativeFilePath.push(
+      relativeFilePath.pop()[...-@extension.length] + ".html" )
+    relativeFilePath.splice 1, 0, "assets"
+    newpath = sysPath.join.apply this, relativeFilePath
+    return newpath
+
   onCompile: (changedFiles) ->
     config = @config
     changedFiles.every (file) ->
       filesToCompile =
-        f.path for f in file.sourceFiles when isFileToCompile f.path
+        f.path for f in file.sourceFiles when StaticJadeCompiler::isFileToCompile f.path
       publicPath = config.paths.public
       for jadeFileName in filesToCompile
-        newFilePath = getHtmlFilePath jadeFileName, publicPath
+        newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, publicPath
         try
           fromJade2Html jadeFileName, config, fileWriter newFilePath
         catch err
