@@ -76,7 +76,7 @@ To permit others plugin (eg. auto-reload-brunch plugin) to *manage* the files ge
 ### Configuration Options
 The plugin can be configured to filter wich file to compile and to place in `assets`, it can:
 
-* build only the files inside the directories that match the regular expression in the `config.plugins.static_jade.path` array.
+* build only the files inside the directories that match a regular expression in the `config.plugins.static_jade.path` array. (best)
 * build only the files that end with the extension specified by `config.plugins.static_jade.extension` string.
 
 Config example:
@@ -86,7 +86,7 @@ Config example:
       pretty: yes # Adds pretty-indentation whitespaces to output (false by default)
     static_jade:
       extension: ".static.jade"   # static-compile each file with this extension in `assets`
-      path: [ /app(\/|\\)docs/ ]  # static-compile each single file in this directories 
+      path: [ /app(\/|\\)docs/ ]  # static-compile each file in this directories 
 
 ```
 
