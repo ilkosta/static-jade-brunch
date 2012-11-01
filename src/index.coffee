@@ -106,7 +106,6 @@ module.exports = class StaticJadeCompiler
       relativeFilePathParts.pop()[...-@extension.length] + ".html" )
     relativeFilePath = sysPath.join.apply this, relativeFilePathParts[1...]
     newpath = sysPath.join relAssetPath, relativeFilePath
-    console.log newpath
     return newpath
 
   onCompile: (changedFiles) ->
