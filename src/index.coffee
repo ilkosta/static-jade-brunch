@@ -65,7 +65,9 @@ module.exports = class StaticJadeCompiler
   extension: ".jade"
 
   constructor: (@config) ->
-    @extension = @config.plugins?.static_jade?.extension ? ".jade"
+    @extension    = @config.plugins?.static_jade?.extension ? ".jade"
+    @relAssetPath = @config.plugins?.static_jade?.asset ? "app/assets"
+    mkdirp.sync @relAssetPath
     StaticJadeCompiler::extension = @extension
     StaticJadeCompiler::config = @config
 
@@ -94,27 +96,27 @@ module.exports = class StaticJadeCompiler
     fileName = sysPath.basename filePath
     fileName[-@extension.length..] == @extension
 
-  getHtmlFilePath: (jadeFilePath, publicPath) ->
+  getHtmlFilePath: (jadeFilePath, relAssetPath) ->
+    util = require 'util'
     # placing the generated files in 'asset' dir,
     # brunch would trigger the auto-reload-brunch only for them
     # without require to trigger the plugin from here
-    relativeFilePath = jadeFilePath.split sysPath.sep
-    relativeFilePath.push(
-      relativeFilePath.pop()[...-@extension.length] + ".html" )
-    relativeFilePath.splice 1, 0, "assets"
-    newpath = sysPath.join.apply this, relativeFilePath
+    relativeFilePathParts = jadeFilePath.split sysPath.sep
+    relativeFilePathParts.push(
+      relativeFilePathParts.pop()[...-@extension.length] + ".html" )
+    relativeFilePath = sysPath.join.apply this, relativeFilePathParts[1...]
+    newpath = sysPath.join relAssetPath, relativeFilePath
+    console.log newpath
     return newpath
 
   onCompile: (changedFiles) ->
-    config = @config
-    changedFiles.every (file) ->
+    changedFiles.every (file) =>
       filesToCompile =
         f.path for f in file.sourceFiles when StaticJadeCompiler::isFileToCompile f.path
-      publicPath = config.paths.public
       for jadeFileName in filesToCompile
-        newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, publicPath
+        newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, @relAssetPath
         try
-          fromJade2Html jadeFileName, config, fileWriter newFilePath
+          fromJade2Html jadeFileName, @config, fileWriter newFilePath
         catch err
           logError err
           null

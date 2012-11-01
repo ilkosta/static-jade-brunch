@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.10 (November 1, 2012)
+* added the possibility to configure the `asset` output directory to fix the problem in https://github.com/ilkosta/static-jade-brunch/commit/af05afada09eed4dfce2a820af28051f1a1fa046#commitcomment-2074956
+
 # static-jade-brunch 1.4.9 (October 15, 2012)
 * added the possibility to filter by extension or directory as in https://github.com/ilkosta/static-jade-brunch/pull/4
 
