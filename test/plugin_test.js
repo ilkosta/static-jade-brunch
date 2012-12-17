@@ -107,5 +107,40 @@ describe('Plugin', function() {
       expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.equal("app/assets/foo.html");
     });
   });
+  describe("getFilesToCompile method", function() {
+    it("should get determine if files are dependencies based on Regexp and return files to be compiled", function() {
+      var npath = jbPresentDir;
+      process.chdir(npath);
+      var plugin = new Plugin({
+        plugins: {
+          static_jade: {
+              pages: [{main: "app/foo.jade", dependencies: /^app\/partials/}]
+            }
+        }
+      }),
 
+      jadeFiles = [
+        "app/bubba.jade",
+        "app/partials/dependency.jade"
+      ];
+      expect(plugin.getFilesToCompile(jadeFiles)).to.eql(["app/bubba.jade", "app/foo.jade"]);
+    });
+    it("should get determine if files are dependencies based on function and return files to be compiled", function() {
+      var npath = jbPresentDir;
+      process.chdir(npath);
+      var plugin = new Plugin({
+        plugins: {
+          static_jade: {
+              pages: [{main: "app/foo.jade", dependencies: function (filename) {return filename.indexOf("app/partials") === 0}}]
+            }
+        }
+      }),
+
+      jadeFiles = [
+        "app/bubba.jade",
+        "app/partials/dependency.jade"
+      ];
+      expect(plugin.getFilesToCompile(jadeFiles)).to.eql(["app/bubba.jade", "app/foo.jade"]);
+    });
+  });
 });
