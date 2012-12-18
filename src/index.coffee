@@ -96,6 +96,25 @@ module.exports = class StaticJadeCompiler
     fileName = sysPath.basename filePath
     fileName[-@extension.length..] == @extension
 
+  # This function uses objects defined in config to ensure that jade files that have dependencies (using jade include)
+  # will get compiled when their dependencies change, and that partials do not get compiled to
+  # the assets directory as well. The config objects are called 'pages' containing properties 'main' defining the file 
+  # to be compiled and 'dependencies' (included partials) to fire the watcher and compile the main file. 
+  getFilesToCompile: (jadeFiles) ->
+    filesToCompile = []
+    pages          = @config.plugins.static_jade.pages
+    for file in jadeFiles
+      isDependency = false
+      for page in pages
+        if page.dependencies?(file) or page.dependencies.exec? file
+          isDependency = true
+          filesToCompile.push(page.main) unless page.main in filesToCompile
+
+      filesToCompile.push(file) if not isDependency and file not in filesToCompile
+
+    filesToCompile
+
+
   getHtmlFilePath: (jadeFilePath, relAssetPath) ->
     util = require 'util'
     # placing the generated files in 'asset' dir,
@@ -110,8 +129,9 @@ module.exports = class StaticJadeCompiler
 
   onCompile: (changedFiles) ->
     changedFiles.every (file) =>
-      filesToCompile =
+      jadeFiles =
         f.path for f in file.sourceFiles when StaticJadeCompiler::isFileToCompile f.path
+      filesToCompile = @getFilesToCompile jadeFiles
       for jadeFileName in filesToCompile
         newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, @relAssetPath
         try
