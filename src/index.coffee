@@ -131,7 +131,7 @@ module.exports = class StaticJadeCompiler
     changedFiles.every (file) =>
       jadeFiles =
         f.path for f in file.sourceFiles when StaticJadeCompiler::isFileToCompile f.path
-      filesToCompile = getFilesToCompile jadeFiles
+      filesToCompile = @getFilesToCompile jadeFiles
       for jadeFileName in filesToCompile
         newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, @relAssetPath
         try
