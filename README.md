@@ -84,6 +84,22 @@ Config example:
 ```coffeescript
   plugins:
     jade:
+      options:          # can be added all the supported jade options
+        pretty: yes     # Adds pretty-indentation whitespaces to output (false by default)
+        compiler: funny # Compiler to replace jade's default
+                        # ...
+      locals:           # locals can be added
+        foo: 'jade is cool'
+    static_jade:                        # all optionals
+      extension:  ".static.jade"        # static-compile each file with this extension in `assets`
+      path:       [ /app(\/|\\)docs/ ]  # static-compile each file in this directories
+      asset:      "app/jade_asset"      # specify the compilation output
+```
+
+but is supported this configuration too (for backwards compatibility):
+```coffeescript
+  plugins:
+    jade:
       pretty: yes # Adds pretty-indentation whitespaces to output (false by default)
     static_jade:                        # all optionals
       extension:  ".static.jade"        # static-compile each file with this extension in `assets`
