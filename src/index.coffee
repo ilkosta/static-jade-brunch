@@ -115,14 +115,11 @@ module.exports = class StaticJadeCompiler
   onCompile: (changedFiles) ->
     changedFiles.every (file) =>
       filesToCompile =
-        f.path for f in file.sourceFiles \
-          when StaticJadeCompiler::isFileToCompile f.path
+        f.path for f in file.sourceFiles when @isFileToCompile f.path
       for jadeFileName in filesToCompile
-        newFilePath = StaticJadeCompiler::getHtmlFilePath \
-          jadeFileName, @relAssetPath
+        newFilePath = @getHtmlFilePath jadeFileName, @relAssetPath
         try
-          StaticJadeCompiler::fromJade2Html \
-            jadeFileName, fileWriter newFilePath
+          @fromJade2Html jadeFileName, fileWriter newFilePath
         catch err
           logError err
           null
