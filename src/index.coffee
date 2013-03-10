@@ -4,21 +4,8 @@ mkdirp  = require 'mkdirp'
 fs      = require 'fs'
 
 # for the notification of errors
-color   = require("ansi-color").set
+color   = require('ansi-color').set
 growl   = require 'growl'
-
-fromJade2Html = (jadeFilePath, config, callback) ->
-  try
-    fs.readFile jadeFilePath, (err,data) ->
-      content = jade.compile data,
-        compileDebug: no,
-        filename: jadeFilePath,
-        pretty: !!config.plugins?.jade?.pretty
-      foo = () ->
-      res = content(foo)
-      callback err, res
-  catch err
-    callback err
 
 logError = (err, title) ->
   title = 'Brunch jade error' if not title?
@@ -36,7 +23,7 @@ fileWriter = (newFilePath) -> (err, content) ->
 
 
 isArray = (obj) ->
- !!(obj and obj.concat and obj.unshift and not obj.callee)
+  !!(obj and obj.concat and obj.unshift and not obj.callee)
 
 # -------------------- from brunch/lib/helpers --------------------------------
 extend = (object, properties) ->
@@ -58,18 +45,20 @@ loadPackages = (rootPath, callback) ->
     callback error, plugins
 #------------------------------------------------------------------------------
 
-
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
   type: 'template'
   extension: ".jade"
 
   constructor: (@config) ->
+    @locals       = @config.plugins?.jade?.locals or () ->
     @extension    = @config.plugins?.static_jade?.extension ? ".jade"
     @relAssetPath = @config.plugins?.static_jade?.asset ? "app/assets"
+    @options      = @config.plugins?.jade?.options \
+                      or @config.plugins?.jade \
+                      or {}
+
     mkdirp.sync @relAssetPath
-    StaticJadeCompiler::extension = @extension
-    StaticJadeCompiler::config = @config
 
     # static-jade-brunch must co-exist with jade-brunch plugin
     loadPackages process.cwd(), (error, packages) ->
@@ -90,7 +79,8 @@ module.exports = class StaticJadeCompiler
     if (@config.plugins?.static_jade?.path?)
       if isArray @config.plugins.static_jade.path
         fileDir = sysPath.dirname filePath
-        positivePaths = (p for p in @config.plugins.static_jade.path when p.test fileDir)
+        positivePaths = (
+          p for p in @config.plugins.static_jade.path when p.test fileDir)
         return no if positivePaths.length == 0
 
     fileName = sysPath.basename filePath
@@ -108,14 +98,31 @@ module.exports = class StaticJadeCompiler
     newpath = sysPath.join relAssetPath, relativeFilePath
     return newpath
 
+  fromJade2Html: (jadeFilePath, callback) ->
+    try
+      fs.readFile jadeFilePath, (err,data) =>
+        if err
+          throw err
+
+        @options.filename = jadeFilePath
+        fn = jade.compile data,
+          @options
+
+        callback err, fn(@locals)
+    catch err
+      callback err
+
   onCompile: (changedFiles) ->
     changedFiles.every (file) =>
       filesToCompile =
-        f.path for f in file.sourceFiles when StaticJadeCompiler::isFileToCompile f.path
+        f.path for f in file.sourceFiles \
+          when StaticJadeCompiler::isFileToCompile f.path
       for jadeFileName in filesToCompile
-        newFilePath = StaticJadeCompiler::getHtmlFilePath jadeFileName, @relAssetPath
+        newFilePath = StaticJadeCompiler::getHtmlFilePath \
+          jadeFileName, @relAssetPath
         try
-          fromJade2Html jadeFileName, @config, fileWriter newFilePath
+          StaticJadeCompiler::fromJade2Html \
+            jadeFileName, fileWriter newFilePath
         catch err
           logError err
           null

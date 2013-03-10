@@ -1,3 +1,6 @@
+# static-jade-brunch 1.4.11 (March 10, 2013)
+* added the possibility to configure all the options of the jade compiler as requested:  https://github.com/ilkosta/static-jade-brunch/issues/6
+
 # static-jade-brunch 1.4.10 (November 1, 2012)
 * added the possibility to configure the `asset` output directory to fix the problem in https://github.com/ilkosta/static-jade-brunch/commit/af05afada09eed4dfce2a820af28051f1a1fa046#commitcomment-2074956
 
