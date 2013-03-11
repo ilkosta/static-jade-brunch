@@ -45,6 +45,14 @@ loadPackages = (rootPath, callback) ->
     callback error, plugins
 #------------------------------------------------------------------------------
 
+clone = (obj) ->
+  return obj  if null is obj or "object" isnt typeof obj
+  copy = obj.constructor()
+  for attr of obj
+    copy[attr] = obj[attr]  if obj.hasOwnProperty(attr)
+  copy
+
+
 module.exports = class StaticJadeCompiler
   brunchPlugin: yes
   type: 'template'
@@ -54,9 +62,11 @@ module.exports = class StaticJadeCompiler
     @locals       = @config.plugins?.jade?.locals or () ->
     @extension    = @config.plugins?.static_jade?.extension ? ".jade"
     @relAssetPath = @config.plugins?.static_jade?.asset ? "app/assets"
-    @options      = @config.plugins?.jade?.options \
+    options      = @config.plugins?.jade?.options \
                       or @config.plugins?.jade \
                       or {}
+
+    @options = clone options
 
     mkdirp.sync @relAssetPath
 
@@ -99,12 +109,14 @@ module.exports = class StaticJadeCompiler
     return newpath
 
   fromJade2Html: (jadeFilePath, callback) ->
+    options = @options
     try
       fs.readFile jadeFilePath, (err,data) =>
         if err
           throw err
 
         @options.filename = jadeFilePath
+
         fn = jade.compile data,
           @options
 
