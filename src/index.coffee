@@ -116,6 +116,7 @@ module.exports = class StaticJadeCompiler
           throw err
 
         @options.filename = jadeFilePath
+        @options.basedir = sysPath.join '.', 'app'
 
         fn = jade.compile data,
           @options
