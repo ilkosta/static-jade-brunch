@@ -62,6 +62,7 @@ module.exports = class StaticJadeCompiler
     @locals       = @config.plugins?.jade?.locals or () ->
     @extension    = @config.plugins?.static_jade?.extension ? ".jade"
     @relAssetPath = @config.plugins?.static_jade?.asset ? "app/assets"
+    @rootPath     = @config.plugins?.static_jade?.rootPath ? 'app'
     options      = @config.plugins?.jade?.options \
                       or @config.plugins?.jade \
                       or {}
@@ -104,7 +105,10 @@ module.exports = class StaticJadeCompiler
     relativeFilePathParts = jadeFilePath.split sysPath.sep
     relativeFilePathParts.push(
       relativeFilePathParts.pop()[...-@extension.length] + ".html" )
-    relativeFilePath = sysPath.join.apply this, relativeFilePathParts[1...]
+    rootFilePathParts = @rootPath.split sysPath.sep
+    pathStartIdx = rootFilePathParts.length
+    relativeFilePath =
+      sysPath.join.apply this, relativeFilePathParts[pathStartIdx...]
     newpath = sysPath.join relAssetPath, relativeFilePath
     return newpath
 
