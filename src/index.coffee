@@ -114,6 +114,7 @@ module.exports = class StaticJadeCompiler
 
   fromJade2Html: (jadeFilePath, callback) ->
     options = @options
+    locals = clone @locals
     try
       fs.readFile jadeFilePath, (err,data) =>
         if err
@@ -121,11 +122,12 @@ module.exports = class StaticJadeCompiler
 
         @options.filename = jadeFilePath
         @options.basedir = sysPath.join '.', 'app'
+        locals.filename = jadeFilePath.replace(new RegExp('^'+@options.basedir+'/'), '')
 
         fn = jade.compile data,
           @options
 
-        callback err, fn(@locals)
+        callback err, fn(locals)
     catch err
       callback err
 
