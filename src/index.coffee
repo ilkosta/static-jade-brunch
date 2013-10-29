@@ -39,7 +39,12 @@ loadPackages = (rootPath, callback) ->
     json = JSON.parse(data)
     deps = Object.keys(extend(json.devDependencies ? {}, json.dependencies))
     try
-      plugins = deps.map (dependency) -> require "#{nodeModules}/#{dependency}"
+      plugins = deps.map (dependency) -> 
+        try
+          require "#{nodeModules}/#{dependency}"
+        catch err
+          {}
+          
     catch err
       error = err
     callback error, plugins
