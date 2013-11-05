@@ -1,3 +1,16 @@
+# Oct 29, 2013
+* When dependecy has not main in package.json plugin fail on brunch load
+
+# Sep 29, 2013
+* Configured jade.compile locals to include the current source filename.
+
+# Sep 16, 2013
+* Added `rootPath` option to plugin
+
+
+# Aug 16, 2013
+* Added basedir to jade compile options
+
 # static-jade-brunch 1.4.11 (March 10, 2013)
 * added the possibility to configure all the options of the jade compiler as requested:  https://github.com/ilkosta/static-jade-brunch/issues/6
 
