@@ -107,6 +107,12 @@ but is supported this configuration too (for backwards compatibility):
       asset:      "app/jade_asset"     # specify the compilation output
 ```
 
+### help?
+
+
+If in doubt, you can play with the project [static-jade-brunch-bootstrap](https://github.com/ilkosta/static-jade-brunch-bootstrap)
+
+
 ## License
 Copyright (c) 2012 "ilkosta" Costantino Giuliodori.
 
