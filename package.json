@@ -1,10 +1,13 @@
 {
   "name": "static-jade-brunch",
   "version": "1.7.1",
+  "description": "Adds Jade support to Brunch, without wrapping the compiled HTML into modules.",
   "author": {
     "name": "Costantino Giuliodori (ilkosta)"
   },
+  "license": "MIT",
   "homepage": "https://github.com/ilkosta/static-jade-brunch",
+  "bugs": "https://github.com/ilkosta/static-jade-brunch/issues",
   "repository": {
     "type": "git",
     "url": "git@github.com:ilkosta/static-jade-brunch.git"
