@@ -7,3 +7,5 @@ lib/
 node_modules/
 test/jade-brunch/*/node_modules/
 test/jade-brunch/present/app/
+test/jade-brunch/present/compilation_test/
+deps.ls

@@ -1,3 +1,6 @@
+# Aug 03, 2015
+* Merged the contribution from @schulzch to fix `npm install` with the last version of node and iojs. Updated the version of dependecies.
+
 # Oct 29, 2013
 * When dependecy has not main in package.json plugin fail on brunch load
 

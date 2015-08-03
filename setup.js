@@ -30,5 +30,5 @@ if (mode === 'prepublish') {
   });
 } else if (mode === 'test') {
   execute(['node_modules', 'mocha', 'bin', 'mocha'],
-    '--require test/common.js --colors --ignore-leaks');
+    '--require test/common.js --colors');
 }
