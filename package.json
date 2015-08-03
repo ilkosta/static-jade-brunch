@@ -19,7 +19,7 @@
     "test": "node setup.js test"
   },
   "dependencies": {
-    "coffee-script": "~1.3.3",
+    "coffee-script": "~1.9.3",
     "jade": "*",
     "mkdirp": "*",
     "ansi-color": "~0.2.1",
