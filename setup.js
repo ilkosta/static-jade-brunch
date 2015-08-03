@@ -1,4 +1,4 @@
-var exec = require('child_process').exec;
+var child_process = require('child_process'), exec = child_process.exec, spawn = child_process.spawn;
 var sysPath = require('path');
 var fs = require('fs');
 
@@ -17,7 +17,13 @@ var execute = function(pathParts, params, callback) {
   });
 };
 
-if (mode === 'postinstall') {
+if (mode === 'prepublish') {
+  var coffee = __dirname + '/node_modules/coffee-script/bin/coffee';
+  spawn('node', [coffee, '-o', 'lib', '-c', 'src'], {
+    cwd: __dirname,
+    stdio: 'inherit'
+  });
+} else if (mode === 'postinstall') {
   fsExists(sysPath.join(__dirname, 'lib'), function(exists) {
     if (exists) return;
     execute(['node_modules', 'coffee-script', 'bin', 'coffee'], '-o lib/ src/');
