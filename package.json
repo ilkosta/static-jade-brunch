@@ -28,5 +28,8 @@
   "devDependencies": {
     "chai": "^3.4.0",
     "mocha": "^2.3.3"
+  },
+  "peerDependencies": {
+    "jade-brunch": "*"
   }
 }

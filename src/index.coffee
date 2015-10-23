@@ -25,30 +25,6 @@ fileWriter = (newFilePath) -> (err, content) ->
 isArray = (obj) ->
   !!(obj and obj.concat and obj.unshift and not obj.callee)
 
-# -------------------- from brunch/lib/helpers --------------------------------
-extend = (object, properties) ->
-  Object.keys(properties).forEach (key) ->
-    object[key] = properties[key]
-  object
-
-loadPackages = (rootPath, callback) ->
-  rootPath = sysPath.resolve rootPath
-  nodeModules = "#{rootPath}/node_modules"
-  fs.readFile sysPath.join(rootPath, 'package.json'), (error, data) ->
-    return callback error if error?
-    json = JSON.parse(data)
-    deps = Object.keys(extend(json.devDependencies ? {}, json.dependencies))
-    try
-      plugins = deps.map (dependency) -> 
-        try
-          require "#{nodeModules}/#{dependency}"
-        catch err
-          {}
-          
-    catch err
-      error = err
-    callback error, plugins
-#------------------------------------------------------------------------------
 
 clone = (obj) ->
   return obj  if null is obj or "object" isnt typeof obj
@@ -76,20 +52,6 @@ module.exports = class StaticJadeCompiler
 
     mkdirp.sync @relAssetPath
 
-    # static-jade-brunch must co-exist with jade-brunch plugin
-    loadPackages process.cwd(), (error, packages) ->
-      throw error if error?
-      if "JadeCompiler" not in (p.name for p in packages)
-        error = """
-          `jade-brunch` plugin needed by `static-jade-brunch` \
-          doesn't seems to be present.
-          """
-        logError error, 'Brunch plugin error'
-        errmsg = """
-          * Check that package.json contain the `jade-brunch` plugin
-          * Check that it is correctly installed by using `npm list`"""
-        console.log color errmsg, "red"
-        throw error
 
   isFileToCompile: (filePath) ->
     if (@config.plugins?.static_jade?.path?)
