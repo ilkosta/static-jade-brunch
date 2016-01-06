@@ -69,10 +69,10 @@ module.exports = class StaticJadeCompiler
     # placing the generated files in 'asset' dir,
     # brunch would trigger the auto-reload-brunch only for them
     # without require to trigger the plugin from here
-    relativeFilePathParts = jadeFilePath.split sysPath.sep
+    relativeFilePathParts = sysPath.normalize(jadeFilePath).split sysPath.sep
     relativeFilePathParts.push(
       relativeFilePathParts.pop()[...-@extension.length] + ".html" )
-    rootFilePathParts = @rootPath.split sysPath.sep
+    rootFilePathParts = sysPath.normalize(@rootPath).split sysPath.sep
     pathStartIdx = rootFilePathParts.length
     relativeFilePath =
       sysPath.join.apply this, relativeFilePathParts[pathStartIdx...]
