@@ -54,8 +54,8 @@ describe('Plugin', function() {
     describe("create output in the `config.conventions.assets` directory", function(){
       it("should get .html from .jade in the 'assets' dir by default", function() {
         var plugin = new Plugin({});
-        expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.equal("app/assets/foo.html");
-        expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.not.equal("app/assets/foo.html");
+        expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.match_filesystem_path("app/assets/foo.html");
+        expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.not.match_filesystem_path("app/assets/foo.html");
       });
       it("should get .html from .jade in the configured assets directory", function() {
         var asset = "app/fake_asset";
@@ -66,14 +66,14 @@ describe('Plugin', function() {
             }
           }
         });
-        expect(plugin.getHtmlFilePath("app/foo.jade", asset)).to.equal("app/fake_asset/foo.html");
-        expect(plugin.getHtmlFilePath("app/foo.static.jade", asset)).to.not.equal("app/assets/foo.html");
+        expect(plugin.getHtmlFilePath("app/foo.jade", asset)).to.match_filesystem_path("app/fake_asset/foo.html");
+        expect(plugin.getHtmlFilePath("app/foo.static.jade", asset)).to.not.match_filesystem_path("app/assets/foo.html");
       });
     });
     it("should get .html from .jade file by default", function() {
       var plugin = new Plugin({});
-      expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.equal("app/assets/foo.html");
-      expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.not.equal("app/assets/foo.html");
+      expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.match_filesystem_path("app/assets/foo.html");
+      expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.not.match_filesystem_path("app/assets/foo.html");
     });
     it("should get .html based on the extension specified in config.coffee", function() {
       var plugin = new Plugin({
@@ -83,8 +83,8 @@ describe('Plugin', function() {
           }
         }
       });
-      expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.not.equal("app/assets/foo.html");
-      expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.equal("app/assets/foo.html");
+      expect(plugin.getHtmlFilePath("app/foo.jade",defAsset)).to.not.match_filesystem_path("app/assets/foo.html");
+      expect(plugin.getHtmlFilePath("app/foo.static.jade",defAsset)).to.match_filesystem_path("app/assets/foo.html");
     });
   });
   describe("the configuration of the jade compiler", function(){
