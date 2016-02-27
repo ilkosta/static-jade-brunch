@@ -3,7 +3,6 @@
 *.kate-swp
 .DS_Store
 npm-debug.log
-lib/
 node_modules/
 test/jade-brunch/*/node_modules/
 test/jade-brunch/present/app/
