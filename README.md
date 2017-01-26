@@ -1,6 +1,11 @@
+> ## 🚧 This Plugin Is Deprecated 🚧
+
+> This plugins is deprecated, since Brunch Static APIs are deprecated.
+
+# static-jade-brunch
+
 [![build status](https://secure.travis-ci.org/ilkosta/static-jade-brunch.png)](http://travis-ci.org/ilkosta/static-jade-brunch)
 
-## static-jade-brunch
 Adds [Jade](http://jade-lang.com) support to [brunch](http://brunch.io) without wrapping the compiled html in modules of type commonjs/amd.
 
 With it you can get rid of `index.html` and use `index.jade` instead.
